@@ -5,19 +5,17 @@ namespace Domain.ValueObjects;
 
 public readonly struct TaskPriority
 {
-    public TaskPriorityEnum Value { get; private init; }
+    private TaskPriorityEnum Value { get; init; }
 
     public static Either<DomainError, TaskPriority> FromInt(int priority)
     {
         if (!Enum.IsDefined(typeof(TaskPriorityEnum), priority))
         {
-            return new DomainError
-            {
-                Code = "InvalidTaskPriority",
-                Message = "Provided task priority does not exists."
-            };
+            return DomainError.InvalidTaskPriority("Provided task priority does not exist.");
         }
 
         return new TaskPriority { Value = (TaskPriorityEnum)priority };
     }
+    
+    public int ToInt() => (int)Value;
 }

@@ -5,19 +5,17 @@ namespace Domain.ValueObjects;
 
 public struct TaskStatus
 {
-    public TaskStatusEnum Value { get; init; }
+    private TaskStatusEnum Value { get; init; }
 
     public static Either<DomainError, TaskStatus> FromInt(int status)
     {
         if (!Enum.IsDefined(typeof(TaskStatusEnum), status))
         {
-            return new DomainError
-            {
-                Code = "InvalidTaskStatus",
-                Message = "Provided task status does not exists."
-            };
+            return DomainError.InvalidTaskStatus("Provided task status does not exist.");
         }
 
         return new TaskStatus { Value = (TaskStatusEnum)status };
     }
+    
+    public int ToInt() => (int)Value;
 }
