@@ -1,4 +1,4 @@
-﻿namespace Core;
+﻿namespace Core.Monads;
 
 public sealed record Either<TLeft, TRight>(TLeft? Left, TRight? Right)
 {

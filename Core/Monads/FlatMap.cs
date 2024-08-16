@@ -1,4 +1,4 @@
-namespace Core;
+namespace Core.Monads;
 
 public static class FlatMapExtension
 {
