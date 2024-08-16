@@ -5,7 +5,7 @@ namespace Domain.ValueObjects;
 
 public readonly struct TaskPriority
 {
-    public TaskPriorityEnum Value { get; init; }
+    public TaskPriorityEnum Value { get; private init; }
 
     public static Either<DomainError, TaskPriority> FromInt(int priority)
     {
