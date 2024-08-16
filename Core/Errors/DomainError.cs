@@ -1,7 +1,10 @@
 namespace Core.Errors;
 
-public record DomainError
+public sealed record DomainError(string Message, string Code)
 {
-    public required string Message { get; init; }
-    public required string Code { get; init; }
+    public static DomainError NotFound(string message) => new(message, "NotFound");
+    public static DomainError InvalidDateTimeFormat(string message) => new DomainError(message, "InvalidDateTimeFormat");
+    public static DomainError InvalidTaskPriority(string message) => new DomainError(message, "InvalidTaskPriority");
+    public static DomainError InvalidTaskStatus(string message) => new DomainError(message, "InvalidTaskStatus");
+
 }
