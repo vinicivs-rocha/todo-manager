@@ -18,16 +18,16 @@ public class ToDo
 
     public static Either<DomainError, ToDo> Create(ToDoCreationData toDoCreationData)
     {
-        return TaskPriority.FromInt(toDoCreationData.Priority).FlatMap(priority =>
-            TaskStatus.FromInt(toDoCreationData.Status).FlatMap(status =>
-                toDoCreationData.DueDate.SafeParseToDateTime().Map(dueDate => new ToDo
-                {
-                    Title = toDoCreationData.Title,
-                    Description = toDoCreationData.Description,
-                    Priority = priority,
-                    DueDate = dueDate,
-                    Status = status
-                }))
-        );
+        return from priority in TaskPriority.FromInt(toDoCreationData.Priority)
+            from status in TaskStatus.FromInt(toDoCreationData.Status)
+            from dueDate in toDoCreationData.DueDate.SafeParseToDateTime()
+            select new ToDo
+            {
+                Title = toDoCreationData.Title,
+                Description = toDoCreationData.Description,
+                Priority = priority,
+                DueDate = dueDate,
+                Status = status
+            };
     }
 }
