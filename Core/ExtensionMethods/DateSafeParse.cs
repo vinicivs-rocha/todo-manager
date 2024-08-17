@@ -5,7 +5,7 @@ namespace Core.ExtensionMethods;
 
 public static class SafeParseStringToDateTime
 {
-    public static Either<DomainError, DateTime> SafeParseToDateTime(this string source)
+    public static Either<DateError, DateTime> SafeParseToDateTime(this string source)
     {
         try
         {
@@ -13,7 +13,7 @@ public static class SafeParseStringToDateTime
         }
         catch (FormatException e)
         {
-           return DomainError.InvalidDateTimeFormat(e.Message);
+            return DateError.InvalidDateTimeFormat(e.Message);
         }
     }
 }

@@ -1,6 +1,6 @@
 namespace Domain.ValueObjects;
 
-public enum TaskStatusEnum
+public enum ToDoStatusEnum
 {
     Waiting = 0,
     InProgress = 1,

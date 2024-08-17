@@ -1,6 +1,6 @@
-namespace Application.UseCases.CreateTask;
+namespace Application.UseCases.CreateToDo;
 
-public record CreateTaskInput
+public record CreateToDoInput
 {
     public required string Title { get; init; }
     public required string Description { get; init; }

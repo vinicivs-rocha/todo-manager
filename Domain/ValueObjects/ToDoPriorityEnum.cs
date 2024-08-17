@@ -1,6 +1,6 @@
 namespace Domain.ValueObjects;
 
-public enum TaskPriorityEnum
+public enum ToDoPriorityEnum
 {
     Low = 0,
     Medium = 1,
