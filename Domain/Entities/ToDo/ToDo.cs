@@ -20,7 +20,7 @@ public class ToDo
         return from priority in ToDoPriority.FromInt(toDoCreationData.Priority)
             from status in ToDoStatus.FromInt(toDoCreationData.Status)
             from dueDate in toDoCreationData.DueDate.SafeParseToDateTime()
-                .Cast(dateError => ToDoError.InvalidToDoDateTimeFormat(dateError.Message))
+                .Cast(dateError => ToDoError.InvalidTodoDueDateFormat(dateError.Message))
             select new ToDo
             {
                 Title = toDoCreationData.Title,
