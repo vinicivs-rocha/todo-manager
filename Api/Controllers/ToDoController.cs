@@ -2,8 +2,6 @@ using System.Globalization;
 using Api.Communication;
 using Application.UseCases.CreateToDo;
 using Application.UseCases.GetToDoById;
-using Core.Errors;
-using Domain.Entities.ToDo;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
