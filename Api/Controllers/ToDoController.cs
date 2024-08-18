@@ -17,6 +17,7 @@ public class ToDoController : ControllerBase
     }
 
     [HttpPost]
+    [ProducesResponseType(type: typeof(CreteToDoResponse), statusCode: StatusCodes.Status201Created)]
     public IActionResult Create([FromBody] CreateToDoRequest createToDoRequest)
     {
         var result = _createToDo.Execute(new CreateToDoInput
@@ -25,16 +26,22 @@ public class ToDoController : ControllerBase
             Priority = createToDoRequest.Priority, DueDate = createToDoRequest.DueDate,
             Status = createToDoRequest.Status
         });
-        
-        if (result.IsLeft) return result.Left.Code switch
-        {
-            "InvalidToDoDateTimeFormat" => BadRequest(result.Left.Message),
-            "InvalidToDoPriority" => BadRequest(result.Left.Message),
-            "InvalidTodoDueDateFormat" => BadRequest(result.Left.Message),
-            "ToDoNotFound" => NotFound(result.Left.Message),
-            _ => BadRequest(result.Left.Message)
-        };
-        
-        return Ok(result.Right);
+
+        if (result.IsLeft)
+            return result.Left.Code switch
+            {
+                "InvalidToDoDateTimeFormat" => BadRequest(CreteToDoResponse.Create(code: result.Left.Code,
+                    message: result.Left.Message)),
+                "InvalidToDoPriority" => BadRequest(CreteToDoResponse.Create(code: result.Left.Code,
+                    message: result.Left.Message)),
+                "InvalidTodoDueDateFormat" => BadRequest(CreteToDoResponse.Create(code: result.Left.Code,
+                    message: result.Left.Message)),
+                "ToDoNotFound" => NotFound(CreteToDoResponse.Create(code: result.Left.Code,
+                    message: result.Left.Message)),
+                _ => BadRequest(CreteToDoResponse.Create(code: result.Left.Code, message: result.Left.Message))
+            };
+
+        return Created(Url.Action("GetById", "ToDo", new { id = result.Right }),
+            CreteToDoResponse.Create(code: "SuccessfullyCreatedTodo", message: "ToDo created successfully"));
     }
 }
