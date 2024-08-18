@@ -6,6 +6,6 @@ public static class SelectManyExtension
         this Either<TLeft, TRight> either, Func<TRight, Either<TLeft, TProjection>> bind,
         Func<TRight, TProjection, TResult> project)
     {
-        return either.FlatMap(bind).Map(projected => project(either.Right, projected));
+        return either.IsRight ? either.FlatMap(bind).Map(projected => project(either.Right, projected)) : either.Left;
     }
 }
