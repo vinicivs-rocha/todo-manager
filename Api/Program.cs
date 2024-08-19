@@ -2,6 +2,7 @@ using Application.Repositories;
 using Application.UseCases.CreateToDo;
 using Application.UseCases.GetAllToDos;
 using Application.UseCases.GetToDoById;
+using Application.UseCases.UpdateToDo;
 using Infra.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,7 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 builder.Services.AddScoped<CreateToDo>();
 builder.Services.AddScoped<GetToDoById>();
 builder.Services.AddScoped<GetAllToDos>();
+builder.Services.AddScoped<UpdateToDo>();
 
 // Inject Repositories
 builder.Services.AddSingleton<IToDoRepository>(new InMemoryToDoRepository());
