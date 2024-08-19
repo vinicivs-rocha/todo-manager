@@ -23,6 +23,7 @@ public class ToDo
                 .Cast(dateError => ToDoError.InvalidTodoDueDateFormat(dateError.Message))
             select new ToDo
             {
+                Id = toDoCreationData.Id is not null ? Guid.Parse(toDoCreationData.Id) : Guid.NewGuid(),
                 Title = toDoCreationData.Title,
                 Description = toDoCreationData.Description,
                 Priority = priority,
