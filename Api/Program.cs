@@ -1,5 +1,6 @@
 using Application.Repositories;
 using Application.UseCases.CreateToDo;
+using Application.UseCases.DeleteToDo;
 using Application.UseCases.GetAllToDos;
 using Application.UseCases.GetToDoById;
 using Application.UseCases.UpdateToDo;
@@ -21,6 +22,7 @@ builder.Services.AddScoped<CreateToDo>();
 builder.Services.AddScoped<GetToDoById>();
 builder.Services.AddScoped<GetAllToDos>();
 builder.Services.AddScoped<UpdateToDo>();
+builder.Services.AddScoped<DeleteToDo>();
 
 // Inject Repositories
 builder.Services.AddSingleton<IToDoRepository>(new InMemoryToDoRepository());
