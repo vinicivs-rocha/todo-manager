@@ -1,5 +1,6 @@
 using Application.Repositories;
 using Application.UseCases.CreateToDo;
+using Application.UseCases.GetAllToDos;
 using Application.UseCases.GetToDoById;
 using Infra.Repositories;
 
@@ -17,6 +18,7 @@ builder.Services.AddRouting(options => options.LowercaseUrls = true);
 // Inject Use Cases
 builder.Services.AddScoped<CreateToDo>();
 builder.Services.AddScoped<GetToDoById>();
+builder.Services.AddScoped<GetAllToDos>();
 
 // Inject Repositories
 builder.Services.AddSingleton<IToDoRepository>(new InMemoryToDoRepository());
