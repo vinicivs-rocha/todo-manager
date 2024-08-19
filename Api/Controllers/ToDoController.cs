@@ -1,6 +1,7 @@
 using System.Globalization;
 using Api.Communication;
 using Application.UseCases.CreateToDo;
+using Application.UseCases.DeleteToDo;
 using Application.UseCases.GetAllToDos;
 using Application.UseCases.GetToDoById;
 using Application.UseCases.UpdateToDo;
@@ -11,7 +12,12 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ToDoController(CreateToDo createToDo, GetToDoById getToDoById, GetAllToDos getAllToDos, UpdateToDo updateToDo) : ControllerBase
+public class ToDoController(
+    CreateToDo createToDo,
+    GetToDoById getToDoById,
+    GetAllToDos getAllToDos,
+    UpdateToDo updateToDo,
+    DeleteToDo deleteToDo) : ControllerBase
 {
 
     [HttpPost]
@@ -79,7 +85,7 @@ public class ToDoController(CreateToDo createToDo, GetToDoById getToDoById, GetA
 
         return Ok(GetAllToDosResponse.Create(result.Right));
     }
-    
+
     [HttpPatch("{id}")]
     [ProducesResponseType(type: typeof(UpdateToDoResponse), statusCode: StatusCodes.Status200OK)]
     [ProducesResponseType(type: typeof(UpdateToDoResponse), statusCode: StatusCodes.Status400BadRequest)]
@@ -87,8 +93,10 @@ public class ToDoController(CreateToDo createToDo, GetToDoById getToDoById, GetA
     [ProducesResponseType(statusCode: StatusCodes.Status500InternalServerError)]
     public IActionResult Update([FromRoute] string id, [FromBody] UpdateToDoRequest updateToDoRequest)
     {
-        var result = updateToDo.Execute(new UpdateToDoInput(Id: id, Title: updateToDoRequest.Title, Description: updateToDoRequest.Description,
-            Priority: updateToDoRequest.Priority, DueDate: updateToDoRequest.DueDate, Status: updateToDoRequest.Status));
+        var result = updateToDo.Execute(new UpdateToDoInput(Id: id, Title: updateToDoRequest.Title,
+            Description: updateToDoRequest.Description,
+            Priority: updateToDoRequest.Priority, DueDate: updateToDoRequest.DueDate,
+            Status: updateToDoRequest.Status));
 
         if (result.IsLeft)
             return result.Left.Code switch
@@ -107,4 +115,21 @@ public class ToDoController(CreateToDo createToDo, GetToDoById getToDoById, GetA
         return Ok(new UpdateToDoResponse(Code: "SuccessfullyUpdatedTodo", Message: "ToDo updated successfully"));
     }
     
+    [HttpDelete("{id}")]
+    [ProducesResponseType(type: typeof(DeleteToDoResponse), statusCode: StatusCodes.Status200OK)]
+    [ProducesResponseType(type: typeof(DeleteToDoResponse), statusCode: StatusCodes.Status404NotFound)]
+    [ProducesResponseType(statusCode: StatusCodes.Status500InternalServerError)]
+    public IActionResult Delete([FromRoute] string id)
+    {
+        var result = deleteToDo.Execute(new DeleteToDoInput(Id: id));
+
+        if (result.IsLeft)
+            return result.Left.Code switch
+            {
+                "ToDoNotFound" => NotFound(new DeleteToDoResponse(Code: result.Left.Code, Message: result.Left.Message)),
+                _ => Problem(detail: result.Left.Message, statusCode: StatusCodes.Status500InternalServerError)
+            };
+
+        return Ok(new DeleteToDoResponse(Code: "SuccessfullyDeletedTodo", Message: "ToDo deleted successfully"));
+    }
 }
