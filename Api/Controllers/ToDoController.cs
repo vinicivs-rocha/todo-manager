@@ -1,30 +1,24 @@
 using System.Globalization;
 using Api.Communication;
 using Application.UseCases.CreateToDo;
+using Application.UseCases.GetAllToDos;
 using Application.UseCases.GetToDoById;
+using Core.Types;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ToDoController : ControllerBase
+public class ToDoController(CreateToDo createToDo, GetToDoById getToDoById, GetAllToDos getAllToDos) : ControllerBase
 {
-    private readonly CreateToDo _createToDo;
-    private readonly GetToDoById _getToDoById;
-
-    public ToDoController(CreateToDo createToDo, GetToDoById getToDoById)
-    {
-        _createToDo = createToDo;
-        _getToDoById = getToDoById;
-    }
 
     [HttpPost]
     [ProducesResponseType(type: typeof(CreateToDoResponse), statusCode: StatusCodes.Status201Created)]
     [ProducesResponseType(type: typeof(CreateToDoResponse), statusCode: StatusCodes.Status400BadRequest)]
     public IActionResult Create([FromBody] CreateToDoRequest createToDoRequest)
     {
-        var result = _createToDo.Execute(new CreateToDoInput
+        var result = createToDo.Execute(new CreateToDoInput
         {
             Title = createToDoRequest.Title, Description = createToDoRequest.Description,
             Priority = createToDoRequest.Priority, DueDate = createToDoRequest.DueDate,
@@ -55,7 +49,7 @@ public class ToDoController : ControllerBase
     [ProducesResponseType(statusCode: StatusCodes.Status500InternalServerError)]
     public IActionResult GetById([FromRoute] string id)
     {
-        var result = _getToDoById.Execute(new GetToDoByIdInput { Id = id });
+        var result = getToDoById.Execute(new GetToDoByIdInput { Id = id });
 
         if (result.IsLeft)
             return result.Left.Code switch
@@ -71,5 +65,17 @@ public class ToDoController : ControllerBase
             Priority = result.Right.Priority.ToInt(),
             DueDate = result.Right.DueDate.ToString(CultureInfo.InvariantCulture), Status = result.Right.Status.ToInt()
         });
+    }
+
+    [HttpGet]
+    [ProducesResponseType(type: typeof(GetAllToDosResponse), statusCode: StatusCodes.Status200OK)]
+    public IActionResult GetAll()
+    {
+        var result = getAllToDos.Execute(Unit.Value);
+
+        if (result.IsLeft)
+            return Problem(detail: result.Left.Message, statusCode: StatusCodes.Status500InternalServerError);
+
+        return Ok(GetAllToDosResponse.Create(result.Right));
     }
 }
