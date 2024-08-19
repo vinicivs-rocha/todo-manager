@@ -3,6 +3,7 @@ using Api.Communication;
 using Application.UseCases.CreateToDo;
 using Application.UseCases.GetAllToDos;
 using Application.UseCases.GetToDoById;
+using Application.UseCases.UpdateToDo;
 using Core.Types;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,7 @@ namespace Api.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ToDoController(CreateToDo createToDo, GetToDoById getToDoById, GetAllToDos getAllToDos) : ControllerBase
+public class ToDoController(CreateToDo createToDo, GetToDoById getToDoById, GetAllToDos getAllToDos, UpdateToDo updateToDo) : ControllerBase
 {
 
     [HttpPost]
@@ -78,4 +79,32 @@ public class ToDoController(CreateToDo createToDo, GetToDoById getToDoById, GetA
 
         return Ok(GetAllToDosResponse.Create(result.Right));
     }
+    
+    [HttpPut("{id}")]
+    [ProducesResponseType(type: typeof(UpdateToDoResponse), statusCode: StatusCodes.Status200OK)]
+    [ProducesResponseType(type: typeof(UpdateToDoResponse), statusCode: StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(type: typeof(UpdateToDoResponse), statusCode: StatusCodes.Status404NotFound)]
+    [ProducesResponseType(statusCode: StatusCodes.Status500InternalServerError)]
+    public IActionResult Update([FromRoute] string id, [FromBody] UpdateToDoRequest updateToDoRequest)
+    {
+        var result = updateToDo.Execute(new UpdateToDoInput(Id: id, Title: updateToDoRequest.Title, Description: updateToDoRequest.Description,
+            Priority: updateToDoRequest.Priority, DueDate: updateToDoRequest.DueDate, Status: updateToDoRequest.Status));
+
+        if (result.IsLeft)
+            return result.Left.Code switch
+            {
+                "InvalidToDoDateTimeFormat" => BadRequest(new UpdateToDoResponse(Code: result.Left.Code,
+                    Message: result.Left.Message)),
+                "InvalidToDoPriority" => BadRequest(new UpdateToDoResponse(Code: result.Left.Code,
+                    Message: result.Left.Message)),
+                "InvalidTodoDueDateFormat" => BadRequest(new UpdateToDoResponse(Code: result.Left.Code,
+                    Message: result.Left.Message)),
+                "ToDoNotFound" => NotFound(new UpdateToDoResponse(Code: result.Left.Code,
+                    Message: result.Left.Message)),
+                _ => Problem(detail: result.Left.Message, statusCode: StatusCodes.Status500InternalServerError)
+            };
+
+        return Ok(new UpdateToDoResponse(Code: "SuccessfullyUpdatedTodo", Message: "ToDo updated successfully"));
+    }
+    
 }
