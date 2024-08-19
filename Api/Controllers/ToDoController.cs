@@ -80,7 +80,7 @@ public class ToDoController(CreateToDo createToDo, GetToDoById getToDoById, GetA
         return Ok(GetAllToDosResponse.Create(result.Right));
     }
     
-    [HttpPut("{id}")]
+    [HttpPatch("{id}")]
     [ProducesResponseType(type: typeof(UpdateToDoResponse), statusCode: StatusCodes.Status200OK)]
     [ProducesResponseType(type: typeof(UpdateToDoResponse), statusCode: StatusCodes.Status400BadRequest)]
     [ProducesResponseType(type: typeof(UpdateToDoResponse), statusCode: StatusCodes.Status404NotFound)]
@@ -93,13 +93,13 @@ public class ToDoController(CreateToDo createToDo, GetToDoById getToDoById, GetA
         if (result.IsLeft)
             return result.Left.Code switch
             {
-                "InvalidToDoDateTimeFormat" => BadRequest(new UpdateToDoResponse(Code: result.Left.Code,
-                    Message: result.Left.Message)),
                 "InvalidToDoPriority" => BadRequest(new UpdateToDoResponse(Code: result.Left.Code,
                     Message: result.Left.Message)),
                 "InvalidTodoDueDateFormat" => BadRequest(new UpdateToDoResponse(Code: result.Left.Code,
                     Message: result.Left.Message)),
                 "ToDoNotFound" => NotFound(new UpdateToDoResponse(Code: result.Left.Code,
+                    Message: result.Left.Message)),
+                "InvalidToDoStatus" => BadRequest(new UpdateToDoResponse(Code: result.Left.Code,
                     Message: result.Left.Message)),
                 _ => Problem(detail: result.Left.Message, statusCode: StatusCodes.Status500InternalServerError)
             };
